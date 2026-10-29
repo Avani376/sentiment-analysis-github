@@ -3,13 +3,13 @@ from pathlib import Path
 import joblib
 import pandas as pd
 import streamlit as st
-from transformers import pipeline
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 BASELINE_MODEL_PATH = PROJECT_ROOT / "models" / "tfidf_logreg.pkl"
 METRICS_PATH = PROJECT_ROOT / "data" / "evaluation_metrics.csv"
 CONFUSION_MATRIX_PATH = PROJECT_ROOT / "assets" / "confusion_matrices.png"
+TRANSFORMER_MODEL_NAME = "distilbert/distilbert-base-uncased-finetuned-sst-2-english"
 
 st.set_page_config(page_title="Review Sentiment Analyzer", page_icon="🎬", layout="wide")
 
@@ -34,13 +34,15 @@ def load_baseline_model():
 
 @st.cache_resource(show_spinner="Loading the public DistilBERT model…")
 def load_transformer_model():
-    """Load the public transformer only when an analysis needs it."""
-    return pipeline(
-        "sentiment-analysis",
-        model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
-        truncation=True,
-        max_length=512,
+    """Load the public tokenizer and classifier only when analysis needs them."""
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(TRANSFORMER_MODEL_NAME)
+    transformer_model = AutoModelForSequenceClassification.from_pretrained(
+        TRANSFORMER_MODEL_NAME
     )
+    transformer_model.eval()
+    return tokenizer, transformer_model
 
 
 @st.cache_data
@@ -65,6 +67,23 @@ def baseline_prediction(model, text: str) -> tuple[str, float]:
     classes = list(model.classes_)
     predicted_index = classes.index(prediction)
     return display_label(prediction), float(probabilities[predicted_index])
+
+
+def transformer_prediction(text: str) -> tuple[str, float]:
+    """Run direct PyTorch inference without importing Transformers' pipeline module."""
+    import torch
+
+    tokenizer, transformer_model = load_transformer_model()
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+    with torch.no_grad():
+        logits = transformer_model(**inputs).logits[0]
+        probabilities = torch.softmax(logits, dim=-1)
+
+    predicted_index = int(torch.argmax(probabilities).item())
+    raw_label = transformer_model.config.id2label.get(
+        predicted_index, str(predicted_index)
+    )
+    return display_label(raw_label), float(probabilities[predicted_index].item())
 
 
 try:
@@ -101,9 +120,7 @@ if st.button("Analyze Sentiment", type="primary"):
 
             transformer_error = False
             try:
-                hf_result = load_transformer_model()(review_text)[0]
-                hf_label = display_label(hf_result["label"])
-                hf_confidence = float(hf_result["score"])
+                hf_label, hf_confidence = transformer_prediction(review_text)
             except Exception:
                 transformer_error = True
 

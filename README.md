@@ -64,7 +64,7 @@ flowchart LR
 | Model | Implementation | What the app uses |
 | --- | --- | --- |
 | Baseline | `TfidfVectorizer(max_features=5000, stop_words="english")` + `LogisticRegression(max_iter=1000)` | The committed `models/tfidf_logreg.pkl` pipeline. |
-| Transformer | `distilbert/distilbert-base-uncased-finetuned-sst-2-english` | Hugging Face's public pretrained sentiment-analysis pipeline. The first run downloads and caches the model. |
+| Transformer | `AutoTokenizer` + `AutoModelForSequenceClassification` using `distilbert/distilbert-base-uncased-finetuned-sst-2-english` | Direct PyTorch inference avoids importing Transformers' broader `pipeline` helper. The first run downloads and caches the model. |
 
 The two confidence values are each model's predicted-class probability. They are useful within a model but are **not calibrated for direct comparison** between model families.
 
