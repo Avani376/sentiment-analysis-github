@@ -43,7 +43,9 @@ jobs:
         run: |
           # python -m guarantees the working directory is on sys.path.
           python -m pytest -v 2>&1 | tee pytest-output.txt
-          echo "PYTEST_EXIT=${PIPESTATUS[0]}" >> "$GITHUB_ENV"
+          # NOTE: GITHUB_ENV does not apply to the current step, so the exit
+          # code must live in a plain variable for the `exit` below.
+          code=${PIPESTATUS[0]}
           {
             echo "### pytest -v"
             echo '```'
@@ -52,11 +54,13 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           # Job logs need sign-in; check-run annotations are public. Surface
           # the failure lines so CI failures are diagnosable from the API.
-          echo "::error::PYTEST_EXIT=${PIPESTATUS[0]}"
-          grep -E "FAILED|ERROR|Error|error" pytest-output.txt | head -10 | while IFS= read -r line; do
-            echo "::error::${line:0:380}"
-          done
-          exit "$PYTEST_EXIT"
+          if [ "$code" -ne 0 ]; then
+            echo "::error::PYTEST_EXIT=$code"
+            grep -E "FAILED|ERROR|Error|error" pytest-output.txt | head -10 | while IFS= read -r line; do
+              echo "::error::${line:0:380}"
+            done
+          fi
+          exit "$code"
 
   legacy-streamlit-smoke:
     # The original Streamlit app must keep working during the migration.
