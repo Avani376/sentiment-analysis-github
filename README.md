@@ -250,6 +250,16 @@ cannot produce.
 └── docker-compose.yml · Dockerfile · render.yaml · .env.example
 ```
 
+---
+
+## 🎬 Experience SENTINEX AI
+
+*See how artificial intelligence transforms customer reviews into actionable business intelligence.*
+
+[![SENTINEX AI — cinematic product showcase](assets/sentinex-product-showcase.png)](assets/sentinex-product-showcase.mp4)
+
+*Click the poster to watch the 18-second cinematic showcase* — a neural field igniting, the holographic AI brain waking up, customer reviews streaming into the core, positive/negative/neutral signals resolving, emotion and aspect intelligence panels, and the final brand reveal. Full-quality video: [`assets/sentinex-product-showcase.mp4`](assets/sentinex-product-showcase.mp4) (GitHub plays it on the file page).
+
 ## ⚠️ Limitations (read before judging)
 
 - **Movie-review domain.** Both trained models come from IMDb; product or
