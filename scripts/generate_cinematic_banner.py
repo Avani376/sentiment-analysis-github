@@ -41,7 +41,7 @@ ASSETS = REPO_ROOT / "assets"
 W, H = 1600, 900
 T = 10.5          # loop duration (s) — every periodic term uses integer cycles
 FPS = 20          # 20 fps → 210 frames
-COLORS = 112      # GIF adaptive palette
+COLORS = 88       # GIF shared palette (global → real inter-frame compression)
 CX, CY = 1120, 400  # brain / heart / rings focal centre
 
 BG_TOP = (6, 9, 18)
@@ -128,9 +128,9 @@ def build_city() -> tuple[Image.Image, Image.Image, list[dict]]:
                 draw.line([(x + bw // 2, top), (x + bw // 2, top - 18)], fill=color + (alpha,), width=2)
                 draw.ellipse([x + bw // 2 - 2, top - 22, x + bw // 2 + 2, top - 18], fill=(255, 80, 80, alpha))
             # window grid
-            for wy in range(top + 12, base_y - 10, 16):
-                for wx in range(x + 6, x + bw - 6, 12):
-                    if rng() > 0.45:
+            for wy in range(top + 14, base_y - 12, 20):
+                for wx in range(x + 7, x + bw - 7, 14):
+                    if rng() > 0.42:
                         lit = 110 + int(rng() * 90)
                         # cyan-ish or warm windows
                         col = (168, 220, 255) if rng() > 0.5 else (255, 214, 150)
@@ -625,11 +625,20 @@ def main() -> None:
         stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
 
+    # Build ONE palette from sampled frames so identical pixels share palette
+    # indices across frames — Pillow can then delta-encode static regions.
+    print("  building global palette...", flush=True)
+    samples = [render_frame(T * k / 8) for k in range(8)]
+    strip = Image.new("RGB", (W, H * len(samples)))
+    for i, smpl in enumerate(samples):
+        strip.paste(smpl, (0, i * H))
+    global_palette = strip.quantize(colors=COLORS, method=Image.MEDIANCUT)
+
     frames: list[Image.Image] = []
     for i in range(FRAME_COUNT):
         frame = render_frame(T * i / FRAME_COUNT)
         proc.stdin.write(frame.tobytes())  # type: ignore[union-attr]
-        frames.append(frame.quantize(colors=COLORS, dither=Image.Dither.NONE))
+        frames.append(frame.convert("RGB").quantize(palette=global_palette, dither=Image.Dither.NONE))
         if i % 40 == 0:
             print(f"  rendered {i}/{FRAME_COUNT}", flush=True)
 
