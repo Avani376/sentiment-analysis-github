@@ -1,6 +1,9 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+# Make the backend package importable regardless of how pytest is invoked
+# (bare `pytest` console script does not put the CWD on sys.path).
+pythonpath = ["."]
 markers = [
   "slow: long-running integration tests (real model inference)",
 ]
