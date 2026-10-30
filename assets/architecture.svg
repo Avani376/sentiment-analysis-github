@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="720" viewBox="0 0 1120 720" font-family="Segoe UI, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#a855f7"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b6f93"/>
+    </marker>
+    <marker id="arrowAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#818cf8"/>
+    </marker>
+  </defs>
+
+  <rect width="1120" height="720" rx="16" fill="#070b16"/>
+  <rect x="1" y="1" width="1118" height="718" rx="15" fill="none" stroke="#1c2a47" stroke-width="1.5"/>
+  <text x="560" y="44" text-anchor="middle" font-size="21" font-weight="700" fill="#e2e8f0">SENTINEX AI — System Architecture (as implemented)</text>
+  <text x="560" y="66" text-anchor="middle" font-size="12" fill="#5b6f93">Every box below exists in the repository today — nothing aspirational</text>
+
+  <!-- CLIENT -->
+  <g>
+    <rect x="48" y="100" width="240" height="150" rx="12" fill="#0d1425" stroke="#1c2a47" stroke-width="1.5"/>
+    <rect x="48" y="100" width="240" height="34" rx="12" fill="url(#accent)" opacity="0.18"/>
+    <text x="168" y="122" text-anchor="middle" font-size="14" font-weight="600" fill="#a5b4fc">Browser — React SPA</text>
+    <text x="168" y="152" text-anchor="middle" font-size="11.5" fill="#8fa3c2">React 19 · TypeScript · Vite</text>
+    <text x="168" y="170" text-anchor="middle" font-size="11.5" fill="#8fa3c2">Tailwind CSS 4 · shadcn-style UI kit</text>
+    <text x="168" y="188" text-anchor="middle" font-size="11.5" fill="#8fa3c2">TanStack Query · Recharts</text>
+    <text x="168" y="206" text-anchor="middle" font-size="11.5" fill="#8fa3c2">React Router</text>
+    <text x="168" y="232" text-anchor="middle" font-size="10.5" fill="#5b6f93">Overview · Analyzer · Explorer · Models</text>
+  </g>
+
+  <!-- SPA serving note -->
+  <path d="M 168 250 L 168 300" stroke="#5b6f93" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="178" y="282" font-size="10.5" fill="#5b6f93">static build (dist/) served by FastAPI at /</text>
+
+  <!-- BACKEND -->
+  <g>
+    <rect x="48" y="306" width="240" height="196" rx="12" fill="#0d1425" stroke="#6366f1" stroke-width="1.6"/>
+    <rect x="48" y="306" width="240" height="34" rx="12" fill="url(#accent)" opacity="0.22"/>
+    <text x="168" y="328" text-anchor="middle" font-size="14" font-weight="600" fill="#a5b4fc">FastAPI Backend (Python 3.11)</text>
+    <text x="168" y="358" text-anchor="middle" font-size="11.5" fill="#8fa3c2">/api/v1 · analyze · datasets</text>
+    <text x="168" y="376" text-anchor="middle" font-size="11.5" fill="#8fa3c2">models · compare · health</text>
+    <text x="168" y="398" text-anchor="middle" font-size="11.5" fill="#8fa3c2">Pydantic v2 schemas · error envelope</text>
+    <text x="168" y="416" text-anchor="middle" font-size="11.5" fill="#8fa3c2">structured logging · CORS · OpenAPI</text>
+    <text x="168" y="438" text-anchor="middle" font-size="11.5" fill="#8fa3c2">pydantic-settings (SENTINEX_* env)</text>
+    <text x="168" y="468" text-anchor="middle" font-size="10.5" fill="#5b6f93">streamed uploads · size/type limits</text>
+    <text x="168" y="484" text-anchor="middle" font-size="10.5" fill="#5b6f93">no raw review text in logs</text>
+  </g>
+
+  <!-- MODEL REGISTRY -->
+  <g>
+    <rect x="396" y="96" width="340" height="220" rx="12" fill="#0d1425" stroke="#a855f7" stroke-width="1.6"/>
+    <rect x="396" y="96" width="340" height="34" rx="12" fill="url(#accent)" opacity="0.22"/>
+    <text x="566" y="118" text-anchor="middle" font-size="14" font-weight="600" fill="#d8b4fe">Model Registry — lazy, locked, per-model label maps</text>
+    <g>
+      <rect x="416" y="146" width="300" height="44" rx="8" fill="#111a30" stroke="#1c2a47"/>
+      <text x="430" y="164" font-size="11.5" fill="#e2e8f0" font-weight="600">tfidf_logreg_legacy</text>
+      <text x="430" y="180" font-size="10" fill="#8fa3c2">committed artifact · provenance UNVERIFIED (historical)</text>
+      <rect x="610" y="154" width="92" height="16" rx="8" fill="#fbbf24" opacity="0.14"/>
+      <text x="656" y="165" text-anchor="middle" font-size="9" fill="#fbbf24">legacy</text>
+    </g>
+    <g>
+      <rect x="416" y="198" width="300" height="44" rx="8" fill="#111a30" stroke="#1c2a47"/>
+      <text x="430" y="216" font-size="11.5" fill="#e2e8f0" font-weight="600">tfidf_logreg_imdb_v1</text>
+      <text x="430" y="232" font-size="10" fill="#8fa3c2">retrained in-repo · seed 42 · 25k held-out split</text>
+      <rect x="604" y="206" width="102" height="16" rx="8" fill="#6366f1" opacity="0.16"/>
+      <text x="655" y="217" text-anchor="middle" font-size="9" fill="#a5b4fc">reproduced</text>
+    </g>
+    <g>
+      <rect x="416" y="250" width="300" height="44" rx="8" fill="#111a30" stroke="#1c2a47"/>
+      <text x="430" y="268" font-size="11.5" fill="#e2e8f0" font-weight="600">distilbert_sst2</text>
+      <text x="430" y="284" font-size="10" fill="#8fa3c2">pretrained checkpoint · lazy torch import · CPU-first</text>
+      <rect x="596" y="258" width="110" height="16" rx="8" fill="#a855f7" opacity="0.16"/>
+      <text x="651" y="269" text-anchor="middle" font-size="9" fill="#d8b4fe">pretrained</text>
+    </g>
+  </g>
+
+  <!-- DATASET PIPELINE -->
+  <g>
+    <rect x="772" y="96" width="300" height="220" rx="12" fill="#0d1425" stroke="#1c2a47" stroke-width="1.5"/>
+    <rect x="772" y="96" width="300" height="34" rx="12" fill="url(#accent)" opacity="0.14"/>
+    <text x="922" y="118" text-anchor="middle" font-size="14" font-weight="600" fill="#a5b4fc">Dataset Ingest Service</text>
+    <text x="922" y="150" text-anchor="middle" font-size="11.5" fill="#8fa3c2">CSV upload (streamed, type + size limits)</text>
+    <text x="922" y="168" text-anchor="middle" font-size="11.5" fill="#8fa3c2">encoding fallback (utf-8-sig → latin-1)</text>
+    <text x="922" y="186" text-anchor="middle" font-size="11.5" fill="#8fa3c2">column auto-detection (word-boundary hints)</text>
+    <text x="922" y="204" text-anchor="middle" font-size="11.5" fill="#8fa3c2">dedupe · label normalization · timestamp parsing</text>
+    <text x="922" y="222" text-anchor="middle" font-size="11.5" fill="#8fa3c2">full drop accounting (nothing silent)</text>
+    <text x="922" y="252" text-anchor="middle" font-size="10.5" fill="#5b6f93">pagination · search · label filter on /reviews</text>
+    <text x="922" y="270" text-anchor="middle" font-size="10.5" fill="#5b6f93">background job runner: Milestone 4</text>
+  </g>
+
+  <!-- ARROWS: backend -> registry / ingest -->
+  <path d="M 288 360 C 330 360 344 260 396 220" stroke="#818cf8" stroke-width="1.8" fill="none" marker-end="url(#arrowAccent)"/>
+  <path d="M 288 420 C 330 420 700 420 772 240" stroke="#818cf8" stroke-width="1.8" fill="none" marker-end="url(#arrowAccent)"/>
+
+  <!-- DB LAYER -->
+  <g>
+    <rect x="396" y="396" width="340" height="150" rx="12" fill="#0d1425" stroke="#1c2a47" stroke-width="1.5"/>
+    <rect x="396" y="396" width="340" height="34" rx="12" fill="url(#accent)" opacity="0.14"/>
+    <text x="566" y="418" text-anchor="middle" font-size="14" font-weight="600" fill="#a5b4fc">SQLAlchemy 2.0 ORM + Alembic</text>
+    <text x="566" y="450" text-anchor="middle" font-size="11.5" fill="#8fa3c2">datasets · reviews · predictions · jobs</text>
+    <text x="566" y="468" text-anchor="middle" font-size="11.5" fill="#8fa3c2">UUID PKs · indexes · JSON/JSONB variants</text>
+    <g>
+      <rect x="416" y="492" width="140" height="38" rx="8" fill="#111a30" stroke="#34d399" stroke-opacity="0.5"/>
+      <text x="486" y="509" text-anchor="middle" font-size="11" fill="#34d399" font-weight="600">SQLite (dev)</text>
+      <text x="486" y="523" text-anchor="middle" font-size="9.5" fill="#5b6f93">zero-install default</text>
+    </g>
+    <g>
+      <rect x="576" y="492" width="140" height="38" rx="8" fill="#111a30" stroke="#1c2a47" stroke-dasharray="5 4"/>
+      <text x="646" y="509" text-anchor="middle" font-size="11" fill="#8fa3c2" font-weight="600">PostgreSQL (prod)</text>
+      <text x="646" y="523" text-anchor="middle" font-size="9.5" fill="#5b6f93">via docker-compose</text>
+    </g>
+  </g>
+
+  <!-- ARTIFACTS -->
+  <g>
+    <rect x="772" y="396" width="300" height="150" rx="12" fill="#0d1425" stroke="#1c2a47" stroke-width="1.5"/>
+    <rect x="772" y="396" width="300" height="34" rx="12" fill="url(#accent)" opacity="0.14"/>
+    <text x="922" y="418" text-anchor="middle" font-size="14" font-weight="600" fill="#a5b4fc">Artifacts on disk (never in the DB)</text>
+    <text x="922" y="450" text-anchor="middle" font-size="11.5" fill="#8fa3c2">models/*.pkl — sklearn pipelines</text>
+    <text x="922" y="468" text-anchor="middle" font-size="11.5" fill="#8fa3c2">model_cards/*.yaml — honest limitations</text>
+    <text x="922" y="486" text-anchor="middle" font-size="11.5" fill="#8fa3c2">evaluations/*.json — reproduced vs historical</text>
+    <text x="922" y="516" text-anchor="middle" font-size="10.5" fill="#5b6f93">backend/ml/train_logreg.py — seeded retrain</text>
+  </g>
+
+  <!-- ARROWS: registry -> artifacts, backend -> db -->
+  <path d="M 736 210 C 756 210 756 300 736 380 L 720 400" stroke="#5b6f93" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 288 470 L 396 470" stroke="#5b6f93" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- CI / TESTS -->
+  <g>
+    <rect x="396" y="586" width="676" height="86" rx="12" fill="#0d1425" stroke="#1c2a47" stroke-width="1.5"/>
+    <rect x="396" y="586" width="676" height="32" rx="12" fill="url(#accent)" opacity="0.14"/>
+    <text x="734" y="607" text-anchor="middle" font-size="13" font-weight="600" fill="#a5b4fc">Quality gates — GitHub Actions CI</text>
+    <text x="734" y="634" text-anchor="middle" font-size="11.5" fill="#8fa3c2">ruff lint · 37 pytest tests (API integration · registry · ingest heuristics) · legacy Streamlit smoke</text>
+    <text x="734" y="654" text-anchor="middle" font-size="10.5" fill="#5b6f93">hermetic: transformer weights disabled in CI · pytest output published to the public job summary</text>
+  </g>
+
+  <!-- footer -->
+  <text x="560" y="700" text-anchor="middle" font-size="10.5" fill="#5b6f93">Sentiment intelligence shipped · emotion / ABSA / topics / evidence-grounded insights tracked on the roadmap (IMPLEMENTATION_PLAN.md)</text>
+</svg>

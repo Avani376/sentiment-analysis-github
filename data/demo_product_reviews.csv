@@ -1,0 +1,49 @@
+review_id,product,text,label,posted_at
+1,"Aurora Buds Pro","These earbuds exceeded every expectation. The noise cancellation is superb and the battery easily lasts my whole workday.",positive,2024-11-02
+2,"NimbusX App","App crashes every single time I try to export my data. Two weeks of emails to support and still no fix.",negative,2024-11-03
+3,"CloudCafe Downtown","Cozy spot with excellent pour-over. The staff remembered my order on the second visit, which was a lovely touch.",positive,2024-11-05
+4,"VoltEdge Charger","Charged my laptop twice as fast as the stock charger. Solid build quality too.",positive,2024-11-05
+5,"NimbusX App","The new dashboard design is clean and fast, but syncing still fails randomly on mobile data.",negative,2024-11-06
+6,"Aurora Buds Pro","Right ear died after three weeks. Support replaced it quickly at least.",negative,2024-11-08
+7,"Halo Fitness Band","Sleep tracking is surprisingly accurate and the app graphs are genuinely useful.",positive,2024-11-09
+8,"VoltEdge Charger","Works, but the cable is stiff and the plug feels loose in the socket. Expected better at this price.",negative,2024-11-10
+9,"CloudCafe Downtown","Coffee was lukewarm and they were out of oat milk by 9am. Disappointing visit.",negative,2024-11-11
+10,"Halo Fitness Band","Setup took ten minutes and the band synced instantly. Very impressed with the onboarding.",positive,2024-11-12
+11,"NimbusX App","Love the offline mode they added this month. Works perfectly on the subway.",positive,2024-11-13
+12,"Aurora Buds Pro","Sound quality is rich and the fit is comfortable for hours, though the case is a fingerprint magnet.",positive,2024-11-14
+13,"VoltEdge Charger","Stoped working entirely after a month of light use. Wish the warranty process was clearer.",negative,2024-11-15
+14,"Halo Fitness Band","Heart rate spikes wildly during strength workouts. Running metrics are fine though.",negative,2024-11-16
+15,"CloudCafe Downtown","Their new cold brew is outstanding and the pastries arrive fresh every morning.",positive,2024-11-17
+16,"NimbusX App","Billing page shows my subscription twice and support keeps closing my ticket as resolved.",negative,2024-11-18
+17,"Aurora Buds Pro","Multipoint pairing works flawlessly between my laptop and phone. Finally a company that gets it.",positive,2024-11-19
+18,"Halo Fitness Band","The band is slim and light but the clasp pops open during workouts.",negative,2024-11-20
+19,"VoltEdge Charger","Great value. It charges three devices at once without getting warm.",positive,2024-11-21
+20,"CloudCafe Downtown","Service was slow at lunch rush and my order came out wrong twice.",negative,2024-11-22
+21,"NimbusX App","The export feature finally supports CSV and it even preserves my custom fields.",positive,2024-11-23
+22,"Aurora Buds Pro","Microphone quality on calls is mediocre; people keep asking me to repeat myself.",negative,2024-11-24
+23,"Halo Fitness Band","Two months in and the battery still lasts nine days. Absolutely delivered on its promise.",positive,2024-11-25
+24,"VoltEdge Charger","The LED indicator is confusing — impossible to tell when it is fully charged.",negative,2024-11-26
+25,"CloudCafe Downtown","Renovated seating area is beautiful and the wifi is fast enough to work from.",positive,2024-11-27
+26,"NimbusX App","Search is instant even with thousands of notes. This update was worth the wait.",positive,2024-11-28
+27,"Aurora Buds Pro","Case hinge snapped within a week. Build quality does not match the price.",negative,2024-11-29
+28,"Halo Fitness Band","The guided breathing sessions are a small feature that I use every single day.",positive,2024-11-30
+29,"VoltEdge Charger","Customer support sent a replacement before I even mailed the broken one back. Outstanding service.",positive,2024-12-01
+30,"CloudCafe Downtown","Prices went up again but portion sizes went down. Hard to justify now.",negative,2024-12-02
+31,"NimbusX App","Notifications arrive hours late on Android. This makes the app useless for reminders.",negative,2024-12-03
+32,"Aurora Buds Pro","ANC performance on flights is remarkable — engine hum just disappears.",positive,2024-12-04
+33,"Halo Fitness Band","App forcing an account login just to see step counts is annoying.",negative,2024-12-05
+34,"VoltEdge Charger","Compact, well-built, and the braided cable feels like it will last years.",positive,2024-12-06
+35,"CloudCafe Downtown","Barista remembered my complicated order and nailed it. Small things matter.",positive,2024-12-07
+36,"NimbusX App","Dark mode finally shipped and it looks gorgeous. Battery drain improved too.",positive,2024-12-08
+37,"Aurora Buds Pro","One star less because the touch controls trigger accidentally when adjusting the fit.",negative,2024-12-09
+38,"Halo Fitness Band","Waterproofing held up perfectly through daily swims. Zero fogging.",positive,2024-12-10
+39,"VoltEdge Charger","It whines audibly when charging a laptop. Too distracting for a desk.",negative,2024-12-11
+40,"CloudCafe Downtown","Weekend brunch menu is creative and the waitstaff is genuinely friendly.",positive,2024-12-12
+41,"NimbusX App","The two-factor login flow broke on the last update and locked me out for a day.",negative,2024-12-13
+42,"Aurora Buds Pro","Transparency mode sounds natural, not tinny like other brands I tried.",positive,2024-12-14
+43,"Halo Fitness Band","Steps count is wildly inaccurate — off by 30% compared to my phone.",negative,2024-12-15
+44,"VoltEdge Charger","Exactly what the listing promised. Second one I have bought for travel.",positive,2024-12-16
+45,"NimbusX App","Templates save me an hour every week. The team clearly listens to user feedback.",positive,2024-12-17
+46,"Aurora Buds Pro","Left bud connects late every time. Annoying rhythm every morning.",negative,2024-12-18
+47,"CloudCafe Downtown","Study-friendly quiet zone upstairs with plenty of outlets. My new default spot.",positive,2024-12-19
+48,"Halo Fitness Band","Firmware update bricked the band for a day until a factory reset fixed it.",negative,2024-12-20

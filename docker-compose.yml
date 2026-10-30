@@ -1,0 +1,50 @@
+# SENTINEX AI — full stack for local/production evaluation.
+#   docker compose up --build            → app on http://localhost:8000
+#   docker compose --profile postgres up → adds PostgreSQL and wires the URL
+#
+# The app container is self-sufficient with SQLite by default; PostgreSQL is
+# opt-in because the dev constraint (small disk) does not need it.
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      SENTINEX_LOG_LEVEL: INFO
+      SENTINEX_MAX_UPLOAD_MB: "10"
+      # Free-tier containers have limited RAM: keep the DistilBERT adapter off
+      # unless you raise the memory limit (~+400 MB with weights resident).
+      SENTINEX_ENABLE_DISTILBERT: "false"
+      SENTINEX_ENABLE_CARDIFFNLP: "false"
+      # With the postgres profile active, override the DB URL:
+      # SENTINEX_DATABASE_URL: postgresql+psycopg://sentinex:sentinex@postgres:5432/sentinex
+    volumes:
+      - sentinex-runtime:/app/backend/.runtime
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["postgres"]
+    environment:
+      POSTGRES_USER: sentinex
+      POSTGRES_PASSWORD: sentinex
+      POSTGRES_DB: sentinex
+    ports:
+      - "5432:5432"
+    volumes:
+      - sentinex-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinex"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  sentinex-runtime:
+  sentinex-pgdata:

@@ -1,0 +1,42 @@
+# Render Blueprint — deploys the full SENTINEX AI app (FastAPI + built SPA) as
+# one web service. The frontend build runs inside the same service, so a single
+# URL serves both the dashboard and the API.
+#
+# Usage: Render Dashboard → New → Blueprint → point at this repository.
+# A free-tier web service can run this stack; see DEPLOYMENT.md for the
+# trade-offs (ephemeral disk on free plans, DistilBERT memory cost).
+
+services:
+  - type: web
+    name: sentinex-ai
+    runtime: python
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r backend/requirements.txt
+      curl -fsSL https://nodejs.org/dist/v22.14.0/node-v22.14.0-linux-x64.tar.xz \
+        | tar -xJ -C /opt && export PATH=/opt/node-v22.14.0-linux-x64/bin:$PATH
+      cd frontend && npm ci --no-audit --no-fund && npm run build
+    startCommand: |
+      cd backend && alembic upgrade head && \
+      uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.11"
+      - key: SENTINEX_LOG_LEVEL
+        value: INFO
+      # Free tier (~512 MB RAM): keep the heavy transformer off; the two
+      # TF-IDF models cover the full demo. Raise the plan and set true to
+      # enable DistilBERT (downloads ~270 MB from the HF cache on first use).
+      - key: SENTINEX_ENABLE_DISTILBERT
+        value: "false"
+      - key: SENTINEX_ENABLE_CARDIFFNLP
+        value: "false"
+      # Render free-tier disks are EPHEMERAL: uploaded datasets reset on
+      # redeploy. Attach a paid disk + a managed Postgres for persistence,
+      # then set SENTINEX_DATABASE_URL accordingly.
+      - key: SENTINEX_DATABASE_URL
+        sync: false # optional: postgresql+psycopg://... (see DEPLOYMENT.md)
