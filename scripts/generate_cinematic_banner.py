@@ -78,15 +78,22 @@ def font(name: str, size: int) -> ImageFont.FreeTypeFont:
 
 # ------------------------------------------------------------ glow sprites ---
 def glow_sprite(radius: int, color: tuple[int, int, int], peak_alpha: int = 255) -> Image.Image:
-    """Pre-blurred radial glow — avoids per-frame GaussianBlur entirely."""
-    size = radius * 2
+    """Pre-blurred radial glow with alpha → 0 at the sprite edge (no square
+    cutoff), sized 2.6× the core radius so falloff never touches the border."""
+    size = int(radius * 2.6)
+    c = size // 2
     layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    steps = 6
+    steps = 10
     for i in range(steps, 0, -1):
         r = radius * i / steps
-        a = int(peak_alpha * (1 - i / (steps + 1)) ** 2.2)
-        ImageDraw.Draw(layer).ellipse([radius - r, radius - r, radius + r, radius + r], fill=color + (a,))
-    return layer.filter(ImageFilter.GaussianBlur(radius * 0.16))
+        a = int(peak_alpha * (1 - i / (steps + 1)) ** 1.8)
+        ImageDraw.Draw(layer).ellipse([c - r, c - r, c + r, c + r], fill=color + (a,))
+    return layer.filter(ImageFilter.GaussianBlur(radius * 0.10))
+
+
+def paste_glow(img: Image.Image, sprite: Image.Image, cx: float, cy: float) -> None:
+    half = sprite.size[0] // 2
+    img.paste(sprite, (int(cx - half), int(cy - half)), sprite)
 
 
 GLOWS = {
@@ -244,50 +251,47 @@ HEART_SPRITES = build_heart_sprites()
 
 # ------------------------------------------------------- emoji badges -------
 def build_emoji(kind: str) -> Image.Image:
-    """Flat vector emotion badge with soft glow — matches app label colours."""
-    size = 132
+    """Flat vector emotion badge with soft glow — clean, minimal faces."""
+    size = 116
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    c = {"happy": GREEN, "sad": ROSE, "calm": AMBER, "wow": CYAN, "love": PINK, "angry": (220, 76, 100)}[kind]
-    # glow
-    glow = glow_sprite(44, c, 120)
-    img.alpha_composite(glow, (size // 2 - 44, size // 2 - 44))
-    # face disc
-    d.ellipse([26, 26, size - 26, size - 26], fill=PANEL + (235,), outline=c + (230,), width=4)
-    ex, ey = size / 2, size / 2
+    c = {"happy": GREEN, "sad": ROSE, "calm": AMBER, "wow": CYAN, "love": PINK, "angry": (235, 87, 110)}[kind]
+    glow = glow_sprite(40, c, 110)
+    img.alpha_composite(glow, (size // 2 - glow.size[0] // 2, size // 2 - glow.size[1] // 2))
+    d.ellipse([22, 22, size - 22, size - 22], fill=PANEL + (238,), outline=c + (235,), width=4)
+    ex, ey = size / 2, size / 2 + 2
+
     if kind in ("happy", "love"):
-        d.arc([ex - 34, ey - 12, ex - 4, ey + 16], 20, 160, fill=c, width=5)
-        d.arc([ex + 4, ey - 12, ex + 34, ey + 16], 20, 160, fill=c, width=5)
-        d.arc([ex - 26, ey - 2, ex + 26, ey + 34], 15, 165, fill=c, width=5)
+        d.ellipse([ex - 24, ey - 22, ex - 10, ey - 8], fill=c + (255,))   # eyes
+        d.ellipse([ex + 10, ey - 22, ex + 24, ey - 8], fill=c + (255,))
+        d.arc([ex - 24, ey - 10, ex + 24, ey + 26], 15, 165, fill=c, width=5)  # smile
+        if kind == "love":
+            d.text((ex, ey - 34), "♥", font=font("segoeui.ttf", 16), fill=c, anchor="mm")
     elif kind in ("sad", "angry"):
-        d.arc([ex - 34, ey + 6, ex - 4, ey + 34], 195, 345, fill=c, width=5)
-        d.arc([ex + 4, ey + 6, ex + 34, ey + 34], 195, 345, fill=c, width=5)
-        d.arc([ex - 24, ey + 8, ex + 24, ey + 38], 200, 340, fill=c, width=5)
+        d.ellipse([ex - 24, ey - 20, ex - 10, ey - 6], fill=c + (255,))
+        d.ellipse([ex + 10, ey - 20, ex + 24, ey - 6], fill=c + (255,))
+        d.arc([ex - 24, ey + 4, ex + 24, ey + 40], 185, 355, fill=c, width=5)  # frown
         if kind == "angry":
-            d.line([ex - 26, ey - 22, ex - 8, ey - 16], fill=c, width=4)
-            d.line([ex + 8, ey - 16, ex + 26, ey - 22], fill=c, width=4)
+            d.line([ex - 27, ey - 28, ex - 9, ey - 22], fill=c, width=4)   # brows
+            d.line([ex + 9, ey - 22, ex + 27, ey - 28], fill=c, width=4)
     elif kind == "wow":
-        d.ellipse([ex - 20, ey - 2, ex + 20, ey + 30], outline=c, width=5)
-        d.ellipse([ex - 30, ey - 24, ex - 10, ey - 6], fill=c + (255,))
-        d.ellipse([ex + 10, ey - 24, ex + 30, ey - 6], fill=c + (255,))
+        d.ellipse([ex - 24, ey - 24, ex - 8, ey - 8], fill=c + (255,))     # round eyes
+        d.ellipse([ex + 8, ey - 24, ex + 24, ey - 8], fill=c + (255,))
+        d.ellipse([ex - 12, ey + 2, ex + 12, ey + 30], outline=c, width=5)  # O mouth
     else:  # calm
-        d.line([ex - 26, ey - 8, ex - 8, ey - 8], fill=c, width=5)
-        d.line([ex + 8, ey - 8, ex + 26, ey - 8], fill=c, width=5)
+        d.line([ex - 26, ey - 12, ex - 8, ey - 12], fill=c, width=5)
+        d.line([ex + 8, ey - 12, ex + 26, ey - 12], fill=c, width=5)
         d.line([ex - 16, ey + 18, ex + 16, ey + 18], fill=c, width=5)
-    # eyes common to happy/sad/calm
-    if kind in ("happy", "sad", "calm"):
-        d.ellipse([ex - 26, ey - 20, ex - 12, ey - 6], fill=c + (255,))
-        d.ellipse([ex + 12, ey - 20, ex + 26, ey - 6], fill=c + (255,))
     return img
 
 
 EMOJIS = [
-    {"sprite": build_emoji("happy"), "r": 300, "a": 1, "phase": 0.00, "base": -135, "bob": 2, "scale_c": 1},
-    {"sprite": build_emoji("sad"), "r": 300, "a": 1, "phase": 0.50, "base": -45, "bob": 3, "scale_c": 2},
-    {"sprite": build_emoji("wow"), "r": 358, "a": 1, "phase": 0.25, "base": 45, "bob": 1, "scale_c": 1},
-    {"sprite": build_emoji("calm"), "r": 358, "a": 1, "phase": 0.75, "base": 135, "bob": 3, "scale_c": 2},
-    {"sprite": build_emoji("love"), "r": 250, "a": 2, "phase": 0.15, "base": 100, "bob": 2, "scale_c": 1},
-    {"sprite": build_emoji("angry"), "r": 250, "a": 2, "phase": 0.65, "base": -80, "bob": 1, "scale_c": 2},
+    {"sprite": build_emoji("happy"), "r": 305, "a": 1, "phase": 0.00, "base": -140, "bob": 2, "scale_c": 1},
+    {"sprite": build_emoji("sad"), "r": 305, "a": 1, "phase": 0.50, "base": -40, "bob": 3, "scale_c": 2},
+    {"sprite": build_emoji("wow"), "r": 368, "a": 1, "phase": 0.25, "base": 50, "bob": 1, "scale_c": 1},
+    {"sprite": build_emoji("calm"), "r": 368, "a": 1, "phase": 0.75, "base": 130, "bob": 3, "scale_c": 2},
+    {"sprite": build_emoji("love"), "r": 238, "a": 2, "phase": 0.12, "base": 105, "bob": 2, "scale_c": 1},
+    {"sprite": build_emoji("angry"), "r": 238, "a": 2, "phase": 0.62, "base": -75, "bob": 1, "scale_c": 2},
 ]
 
 
@@ -325,7 +329,7 @@ def build_logo(scale: int = 2) -> Image.Image:
     return out
 
 
-LOGO = build_logo()
+LOGO = build_logo(1)
 
 
 # ------------------------------------------------------------- vignette -----
@@ -371,12 +375,12 @@ _td = ImageDraw.Draw(TEXT_BASE)
 sub = "AI-POWERED REVIEW INTELLIGENCE"
 f_sub = font("seguisb.ttf", 19)
 sw = _td.textlength(sub, font=f_sub)
-_td.rounded_rectangle([186, 148, 186 + sw + 36, 186], 19, fill=(99, 102, 241, 44), outline=(129, 140, 248, 130), width=1)
-_td.text((186 + 18, 154), sub, font=f_sub, fill=(165, 180, 252))
+_td.rounded_rectangle([180, 148, 180 + sw + 36, 186], 19, fill=(99, 102, 241, 44), outline=(129, 140, 248, 130), width=1)
+_td.text((180 + 18, 154), sub, font=f_sub, fill=(165, 180, 252))
 # title
-gradient_text(TEXT_BASE, (188, 62), "SENTINEX AI", font("seguisb.ttf", 60), (165, 180, 252), (216, 180, 254))
+gradient_text(TEXT_BASE, (180, 58), "SENTINEX AI", font("seguisb.ttf", 60), (165, 180, 252), (216, 180, 254))
 # tagline
-_td.text((68, 208), "TURN CUSTOMER OPINIONS INTO BUSINESS DECISIONS.", font=font("segoeuil.ttf", 24), fill=INK)
+_td.text((180, 208), "TURN CUSTOMER OPINIONS INTO BUSINESS DECISIONS.", font=font("segoeuil.ttf", 24), fill=INK)
 
 
 # ------------------------------------------------------------- particles ----
@@ -448,7 +452,7 @@ def render_frame(t: float) -> Image.Image:
                 ti = max(0, int(idx) - k)
                 draw.ellipse([pts[ti][0] - 2, pts[ti][1] - 2, pts[ti][0] + 2, pts[ti][1] + 2], fill=s["col"] + (int(150 * (1 - k / trail)),))
             sprite = GLOWS["cyan_s"] if s["col"] == CYAN else GLOWS["violet_s"]
-            img.paste(sprite, (int(px) - 14, int(py) - 14), sprite)
+            paste_glow(img, sprite, px, py)
 
     # A. brain — breathing glow (5 cycles), synapses shimmer, light pulses
     breath = 0.5 + 0.5 * math.sin(2 * math.pi * 5 * t / T)
@@ -469,7 +473,7 @@ def render_frame(t: float) -> Image.Image:
         p = ((t / T) * (1 + k) + k * 0.31) % 1
         px, py = polyline_point(path, p)
         sprite = GLOWS["cyan_m"] if k % 2 == 0 else GLOWS["indigo_m"]
-        img.paste(sprite, (int(px) - 26, int(py) - 26), sprite)
+        paste_glow(img, sprite, px, py)
         draw.ellipse([px - 3, py - 3, px + 3, py + 3], fill=(230, 235, 255, 240))
 
     # B. heart — heartbeat (11 beats), colour cycle, energy waves (6 per loop)
@@ -490,8 +494,10 @@ def render_frame(t: float) -> Image.Image:
         h0, h1 = HEART_SPRITES[1], HEART_SPRITES[2]
     blended = Image.new("RGBA", h0.size, (0, 0, 0, 0))
     blended.alpha_composite(h0)
+    # Scale the existing alpha channel — putalpha with a constant would make
+    # the transparent corners opaque and paste a dark box behind the heart.
     overlay = h1.copy()
-    overlay.putalpha(int(255 * min(1, fa)))
+    overlay.putalpha(overlay.split()[3].point(lambda v: int(v * min(1.0, fa))))
     blended.alpha_composite(overlay)
 
     wave_r = 40 + beat * 6
@@ -527,7 +533,7 @@ def render_frame(t: float) -> Image.Image:
         mid = math.radians(scan + 13)
         sx, sy = CX + r * math.cos(mid), CY - 6 + r * math.sin(mid)
         sprite = GLOWS["cyan_m"] if ring["col"] != VIOLET else GLOWS["indigo_m"]
-        img.paste(sprite, (int(sx) - 26, int(sy) - 26), sprite)
+        paste_glow(img, sprite, sx, sy)
         # interface indicator dots riding the ring
         for dot in range(3):
             ang = math.radians(rot + dot * 120 + ring["r"])
@@ -554,10 +560,10 @@ def render_frame(t: float) -> Image.Image:
     bar_w, bar_gap, bar_base_y = 26, 18, py1 - 12
     for i, b in enumerate(BARS):
         x = px0 + 96 + i * (bar_w + bar_gap)
-        hgt = int((b["base"] + b["amp"] * math.sin(2 * math.pi * b["cycles"] * t / T + b["phase"] * 2 * math.pi)) * 44)
+        hgt = int((b["base"] + b["amp"] * math.sin(2 * math.pi * b["cycles"] * t / T + b["phase"] * 2 * math.pi)) * 54)
         pd.rounded_rectangle([x, bar_base_y - hgt, x + bar_w, bar_base_y], 4, fill=b["col"] + (215,))
     # waveform
-    wl_x0, wl_x1 = px0 + 340, px0 + 800
+    wl_x0, wl_x1 = px0 + 356, px0 + 956
     pts = []
     for i in range(90):
         x = wl_x0 + (wl_x1 - wl_x0) * i / 89
@@ -565,7 +571,7 @@ def render_frame(t: float) -> Image.Image:
         pts.append((x, y))
     pd.line(pts, fill=CYAN + (190,), width=2)
     # gauge
-    gcx, gcy, gr = px1 - 210, (py0 + py1) / 2, 26
+    gcx, gcy, gr = px0 + 1040, (py0 + py1) / 2, 26
     pd.arc([gcx - gr, gcy - gr, gcx + gr, gcy + gr], 0, 360, fill=EDGE + (255,), width=4)
     needle = -90 + 360 * 2 * t / T
     nang = math.radians(needle)
@@ -576,7 +582,7 @@ def render_frame(t: float) -> Image.Image:
     # KPI chips
     chips = [("MODELS", "3", INDIGO_L), ("REVIEWS", "48", CYAN), ("SEED", "42", VIOLET)]
     for i, (k, v, c) in enumerate(chips):
-        x = px1 - 300 + i * 78
+        x = px0 + 1240 + i * 84
         y = py0 + 24
         pd.text((x, y + 14), v, font=font("seguisb.ttf", 17), fill=c)
         pd.text((x, y + 36), k, font=font("segoeui.ttf", 8), fill=INK_FAINT)
