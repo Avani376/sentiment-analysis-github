@@ -9,6 +9,14 @@ venv/
 .venv*/
 __pycache__/
 *.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Runtime state (SQLite dev DB, uploaded files) — never committed
+backend/.runtime/
 
 # Local development
 .DS_Store
+node_modules/
+dist/
+

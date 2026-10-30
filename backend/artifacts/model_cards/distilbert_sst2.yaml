@@ -1,0 +1,23 @@
+key: distilbert_sst2
+description: >
+  Pretrained DistilBERT fine-tuned on the Stanford Sentiment Treebank-2
+  (SST-2) by Hugging Face: distilbert/distilbert-base-uncased-finetuned-sst-2-english.
+  Used here as a public checkpoint via direct PyTorch inference — this project
+  did NOT fine-tune it.
+training_provenance: >
+  Loaded from the public Hugging Face checkpoint. Not trained or fine-tuned by
+  this repository. Reference metrics quoted anywhere for SST-2 come from its
+  upstream model card, not from our evaluation.
+intended_domain: >
+  Short sentence-level movie-review snippets (SST-2 sentences). Long product,
+  app, or restaurant reviews are out of domain.
+limitations:
+  - Binary model — SST-2 has no neutral class; this adapter never invents one.
+  - Input truncated to 512 tokens; longer reviews are evaluated on their
+    beginning only, while the TF-IDF models see the full text. Comparisons
+    across models must acknowledge this asymmetry.
+  - Trained on short snippets; long-form reviews are out-of-distribution.
+  - First use downloads ~270 MB unless the local Hugging Face cache is warm.
+calibration: >
+  Softmax outputs of the fine-tuned classifier. Known to be overconfident on
+  out-of-domain text; not calibrated and not comparable across model families.

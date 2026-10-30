@@ -1,0 +1,16 @@
+# SENTINEX AI backend — core dependencies (light, CPU-friendly).
+# All versions pinned to the environment the tests were run in.
+# Optional heavy transformer dependencies live in requirements-full.txt.
+
+fastapi==0.162.0
+uvicorn[standard]==0.54.0
+pydantic==2.14.2
+pydantic-settings==2.16.2
+sqlalchemy==2.1.6
+alembic==1.20.1
+python-multipart==0.0.32
+pyyaml==6.0.3
+pandas==2.2.3
+numpy==2.4.6
+scikit-learn==1.6.1
+joblib==1.4.2

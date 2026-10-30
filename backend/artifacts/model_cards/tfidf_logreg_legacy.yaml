@@ -1,0 +1,22 @@
+key: tfidf_logreg_legacy
+description: >
+  The repository's original committed artifact (models/tfidf_logreg.pkl):
+  TfidfVectorizer(max_features=5000, stop_words='english') + LogisticRegression
+  (C=1.0, lbfgs, max_iter=1000). Binary positive/negative classifier.
+training_provenance: >
+  UNVERIFIED. The training script and data split that produced this artifact
+  were never versioned. The committed data/evaluation_metrics.csv row
+  (accuracy 84.5%) cannot be reproduced from anything in this repository.
+  A 100-row smoke check (see REPOSITORY_AUDIT.md) reproduces at 97.00% accuracy
+  but may include rows seen during training, so it is not a benchmark.
+intended_domain: >
+  Unknown; consistent with long-form movie reviews based on the sample data
+  shipped alongside it.
+limitations:
+  - Training corpus and split are unknown; treat all metrics as historical reference only.
+  - Binary model — it does not support a neutral class and is never asked for one.
+  - Unigram-only TF-IDF; no negation handling beyond what 5000 features capture.
+  - May have seen the shipped sample_test_reviews.csv during training (unverifiable).
+calibration: >
+  Probabilities are raw logistic outputs. No calibration method was applied;
+  confidence values are not comparable across models.

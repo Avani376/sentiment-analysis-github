@@ -1,0 +1,10 @@
+# Optional heavy dependencies: enables the DistilBERT sentiment adapter and
+# (from Milestone 4) the emotion / 3-class neutral models.
+# Install IN ADDITION to requirements.txt:
+#   pip install -r requirements.txt -r requirements-full.txt
+# The models themselves download on first use unless the Hugging Face cache
+# is already warm (~270 MB for DistilBERT SST-2).
+
+torch==2.5.1
+transformers==4.48.3
+pyarrow==26.0.0  # parquet reading for backend/ml/train_logreg.py dataset download

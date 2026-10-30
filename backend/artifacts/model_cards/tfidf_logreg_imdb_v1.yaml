@@ -1,0 +1,27 @@
+key: tfidf_logreg_imdb_v1
+description: >
+  TF-IDF + Logistic Regression retrained in-repo on the public IMDb movie
+  review dataset (Stanford AI Lab, aclImdb v1): identical hyperparameters to
+  the legacy artifact (max_features=5000, English stop words, unigrams;
+  LogisticRegression C=1.0, lbfgs, max_iter=1000) so results are comparable
+  across the two, with the difference being provenance rather than capacity.
+training_provenance: >
+  Trained by backend/ml/train_logreg.py on the aclImdb v1 training split
+  (25,000 labelled reviews) with fixed seed 42; evaluated on the disjoint
+  25,000-review held-out test split. The script records dataset checksum,
+  label counts, package versions, and runtime in
+  backend/artifacts/evaluations/tfidf_logreg_imdb_v1.json.
+intended_domain: >
+  Long-form movie reviews (IMDb). Transfer to product, app, or restaurant
+  reviews is possible but out of the training domain — expect degradation and
+  verify with your own labelled data.
+limitations:
+  - Binary model — it does not support a neutral class and is never asked for one.
+  - Unigram TF-IDF; no explicit negation or sarcasm handling.
+  - Trained on movie reviews; domain transfer is not guaranteed.
+  - LogisticRegression(lbfgs) is effectively deterministic at fixed seed, but
+    exact reproduction requires the pinned scikit-learn version recorded in
+    the evaluation artifact.
+calibration: >
+  Probabilities are raw logistic outputs without calibration (no
+  Platt/isotonic scaling applied). Confidence is not comparable across models.
