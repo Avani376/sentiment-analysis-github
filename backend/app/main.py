@@ -2,18 +2,22 @@
 
 from __future__ import annotations
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.api.v1 import api_router
-from app.core.config import get_settings
+from app.core.config import PROJECT_ROOT, get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
 from app.db.session import engine
 from app.services.registry import get_registry
+
+FRONTEND_DIST = PROJECT_ROOT / "frontend" / "dist"
 
 description = """
 SENTINEX AI — Review Intelligence Platform.
@@ -79,4 +83,23 @@ def create_app() -> FastAPI:
     return app
 
 
+class SPAStaticFiles(StaticFiles):
+    """StaticFiles that falls back to index.html for client-side routes.
+
+    Registered LAST, so /api/*, /docs and /health keep precedence; deep links
+    like /analyze resolve to the SPA instead of a 404.
+    """
+
+    def lookup_path(self, path: str) -> tuple[str, os.stat_result | None]:
+        resolved, stat = super().lookup_path(path)
+        if stat is None:
+            return super().lookup_path("index.html")
+        return resolved, stat
+
+
 app = create_app()
+
+# Serve the built React app when present (built via `npm run build` in frontend/).
+# In development, run the Vite dev server instead — it proxies /api to this app.
+if FRONTEND_DIST.is_dir():
+    app.mount("/", SPAStaticFiles(directory=FRONTEND_DIST, html=True), name="spa")

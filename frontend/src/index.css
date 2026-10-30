@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme {
+  /* SENTINEX dark-first design tokens */
+  --color-base: #070b16;
+  --color-panel: #0d1425;
+  --color-panel-2: #111a30;
+  --color-edge: #1c2a47;
+  --color-ink: #e2e8f0;
+  --color-ink-dim: #8fa3c2;
+  --color-ink-faint: #5b6f93;
+  --color-accent: #6366f1;
+  --color-accent-2: #a855f7;
+
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-base);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle page backdrop: two soft radial glows on deep navy. */
+.app-backdrop {
+  background:
+    radial-gradient(900px 480px at 85% -10%, rgba(99, 102, 241, 0.13), transparent 60%),
+    radial-gradient(700px 420px at -10% 110%, rgba(168, 85, 247, 0.09), transparent 60%),
+    var(--color-base);
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 40%), var(--color-panel);
+  border: 1px solid var(--color-edge);
+  border-radius: 1rem;
+}
+
+.accent-gradient {
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+}
+
+.accent-gradient-text {
+  background: linear-gradient(135deg, #a5b4fc, #d8b4fe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Slim scrollbars that match the theme. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #243356 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #243356;
+  border-radius: 8px;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fade-up 0.35s ease-out both;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, #111a30 25%, #182342 50%, #111a30 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 0.5rem;
+}
