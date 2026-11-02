@@ -21,10 +21,12 @@
 
 ---
 
-> **Live demo:** not published yet — the deployment stack (Docker + Render
-> blueprint) is prepared and documented in [DEPLOYMENT.md](DEPLOYMENT.md), and
-> publishing requires the repository owner's hosting account. Every claim in
-> this README is reproducible locally in under two minutes.
+> **Live demo:** 🌐 **[sentinex-ai-8016.onrender.com](https://sentinex-ai-8016.onrender.com/)** —
+> deployed on Render (free tier). Register any username/email to explore: run AI analysis on the
+> demo dataset, browse emotions, aspects, topics and evidence-cited insights.
+> Free-tier notes: the service sleeps after inactivity (~50 s cold start), uploaded datasets reset on
+> redeploy, and the heavy transformer models are disabled — the two TF-IDF models + the full analytics
+> suite run fine. Deployment details: [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## What is SENTINEX?
 
