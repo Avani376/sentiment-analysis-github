@@ -2,6 +2,7 @@ import { useState } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, FileUp, Search, Database } from "../components/icons";
 import { Badge, Button, Card, EmptyState, ErrorState, SectionTitle, Skeleton } from "../components/ui";
+import { AiAnalysisPanel } from "../components/AiAnalysisPanel";
 import { useToast } from "../components/Toast";
 import { api, ApiError } from "../lib/api";
 import { bytes, dateTime, labelStyle } from "../lib/format";
@@ -120,6 +121,10 @@ export function ExplorerPage() {
       </div>
 
       <UploadPanel />
+
+      {activeDataset && <AiAnalysisPanel datasetId={activeDataset} datasetName={
+        datasets.data?.find((d) => d.id === activeDataset)?.name ?? "dataset"
+      } />}
 
       <Card>
         <SectionTitle title="Browse reviews" subtitle="Full-text search, label filter, pagination." />

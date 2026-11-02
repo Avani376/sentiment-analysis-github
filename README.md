@@ -69,7 +69,9 @@ works.
 | **Dashboard** | KPIs computed from stored data; evaluation chart that never mixes reproduced and historical metrics |
 | **Model Laboratory** | Provenance badges (trained-in-repo / legacy / pretrained), expandable limitations, evaluation records table |
 | **Reproducible training** | `ml/train_logreg.py` — IMDb download with SHA-256 provenance, seed 42, disjoint 25k test split, JSON evaluation artifacts |
-| **Engineering** | FastAPI + Pydantic v2, SQLAlchemy 2.0 + Alembic, SQLite dev default / PostgreSQL ready, structured errors, CI (ruff + 37 tests), Docker stack |
+| **Accounts** | Register / login / logout with scrypt-hashed passwords and HttpOnly sessions; mutating actions require login |
+| **Bulk AI analysis** | Background jobs score every review with every available model; progress polling; per-dataset sentiment analytics with model agreement; CSV export |
+| **Engineering** | FastAPI + Pydantic v2, SQLAlchemy 2.0 + Alembic, SQLite dev default / PostgreSQL ready, structured errors, CI (ruff + 46 tests), Docker stack |
 
 <div align="center">
 <table>

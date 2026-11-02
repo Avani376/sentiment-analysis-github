@@ -7,11 +7,13 @@ import {
   Boxes,
   Gauge,
   ListFilter,
+  LogOut,
   MessageSquareText,
   Microscope,
   SentinexLogo,
 } from "./icons";
-import type { Health } from "../lib/types";
+import { useAuth } from "./Auth";
+import type { Health, UserOut } from "../lib/types";
 import { api } from "../lib/api";
 
 const NAV = [
@@ -29,7 +31,7 @@ function useHealth() {
   });
 }
 
-function Sidebar({ healthy }: { healthy: boolean | undefined }) {
+function Sidebar({ healthy, user, logout, loggingOut }: { healthy: boolean | undefined; user: UserOut; logout: () => Promise<void>; loggingOut: boolean }) {
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-[var(--color-edge)] bg-[var(--color-panel)]/60 backdrop-blur">
       <div className="flex items-center gap-3 px-5 pb-6 pt-6">
@@ -71,9 +73,20 @@ function Sidebar({ healthy }: { healthy: boolean | undefined }) {
             Backend {healthy === undefined ? "connecting…" : healthy ? "online" : "offline"}
           </span>
         </div>
-        <p className="mt-2 flex items-center gap-1.5 text-[10px] text-slate-600">
-          <Activity className="h-3 w-3" /> v0.2.0 · local deployment
-        </p>
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <p className="flex items-center gap-1.5 text-[10px] text-slate-600">
+            <Activity className="h-3 w-3" /> v0.2.0
+          </p>
+          <button
+            onClick={() => void logout()}
+            disabled={loggingOut}
+            title={`Log out ${user.username}`}
+            className="flex items-center gap-1.5 rounded-lg bg-white/5 px-2.5 py-1.5 text-[11px] text-slate-400 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-slate-200 disabled:opacity-50"
+          >
+            <LogOut className="h-3 w-3" />
+            {loggingOut ? "…" : user.username}
+          </button>
+        </div>
       </div>
     </aside>
   );
@@ -85,10 +98,11 @@ export function Layout() {
   const current = NAV.find((n) => (n.end ? n.to === location.pathname : location.pathname.startsWith(n.to)));
   // undefined = still connecting; true/false = definite state.
   const healthy = health ? health.database === "ok" : undefined;
+  const { user, logout, loggingOut } = useAuth();
 
   return (
     <div className="app-backdrop flex h-full">
-      <Sidebar healthy={healthy} />
+      <Sidebar healthy={healthy} user={user} logout={logout} loggingOut={loggingOut} />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 items-center justify-between border-b border-[var(--color-edge)] px-6">
           <h1 className="text-sm font-medium text-slate-300">{current?.label ?? "SENTINEX AI"}</h1>

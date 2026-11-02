@@ -132,3 +132,48 @@ export interface ModelCompareResponse {
 export interface ErrorEnvelope {
   error: { code: string; message: string; details?: Record<string, unknown> | null };
 }
+
+export interface UserOut {
+  id: string;
+  username: string;
+  display_name: string | null;
+}
+
+export interface JobOut {
+  id: string;
+  dataset_id: string | null;
+  job_type: string;
+  status: "queued" | "running" | "succeeded" | "failed" | "cancelled";
+  progress_current: number;
+  progress_total: number;
+  model_keys: string[];
+  error_message: string | null;
+  started_at: string | null;
+  finished_at: string | null;
+  created_at: string;
+}
+
+export interface ModelAnalytics {
+  model_key: string;
+  model_version: string;
+  predictions: number;
+  label_counts: Record<string, number>;
+  avg_confidence: number | null;
+}
+
+export interface ReviewExample {
+  review_id: number;
+  text: string;
+  label: string;
+  confidence: number;
+}
+
+export interface DatasetAnalytics {
+  dataset_id: string;
+  total_reviews: number;
+  total_predictions: number;
+  has_results: boolean;
+  per_model: ModelAnalytics[];
+  agreement: Record<string, number>;
+  examples: Record<string, ReviewExample[]>;
+}
