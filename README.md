@@ -71,6 +71,10 @@ works.
 | **Reproducible training** | `ml/train_logreg.py` — IMDb download with SHA-256 provenance, seed 42, disjoint 25k test split, JSON evaluation artifacts |
 | **Accounts** | Register / login / logout with scrypt-hashed passwords and HttpOnly sessions; mutating actions require login |
 | **Bulk AI analysis** | Background jobs score every review with every available model; progress polling; per-dataset sentiment analytics with model agreement; CSV export |
+| **Emotion intelligence** | DistilRoBERTa emotion classifier (separate task from sentiment); persisted per review; distribution + representative examples; documented label mapping |
+| **Aspect intelligence** | Transparent rule-based baseline — aspect lexicon, clause-level polarity, exact evidence spans; method disclosed in the API and UI |
+| **Topic discovery** | TF-IDF + KMeans (seeded) with per-topic sentiment and representative reviews; graceful on small datasets |
+| **Business insights** | Deterministic, evidence-cited statements — executive summary, themes, recurring complaints, suggested actions, strength badges |
 | **Engineering** | FastAPI + Pydantic v2, SQLAlchemy 2.0 + Alembic, SQLite dev default / PostgreSQL ready, structured errors, CI (ruff + 46 tests), Docker stack |
 
 <div align="center">

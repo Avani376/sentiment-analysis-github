@@ -162,3 +162,22 @@ class SessionToken(TimestampMixin, Base):
     )
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     user_agent: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+
+class EmotionResult(TimestampMixin, Base):
+    """Persisted emotion classification for a review (separate task from sentiment)."""
+
+    __tablename__ = "emotion_results"
+    __table_args__ = (UniqueConstraint("review_id", "model_key", name="uq_emotion_results_review_model"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    review_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("reviews.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    model_key: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    model_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    #: Full distribution over canonical emotion labels.
+    emotions: Mapped[dict] = mapped_column(JsonType, nullable=False)
+    dominant_emotion: Mapped[str] = mapped_column(String(24), nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    latency_ms: Mapped[float] = mapped_column(Float, nullable=False)

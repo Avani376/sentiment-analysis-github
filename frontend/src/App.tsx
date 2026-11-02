@@ -6,6 +6,10 @@ import { Layout } from "./components/Layout";
 import { AnalyzerPage } from "./pages/AnalyzerPage";
 import { ExplorerPage } from "./pages/ExplorerPage";
 import { ModelsPage } from "./pages/ModelsPage";
+import { EmotionsPage } from "./pages/EmotionsPage";
+import { AspectsPage } from "./pages/AspectsPage";
+import { TopicsPage } from "./pages/TopicsPage";
+import { InsightsPage } from "./pages/InsightsPage";
 import { OverviewPage } from "./pages/OverviewPage";
 
 const queryClient = new QueryClient({
@@ -26,6 +30,10 @@ export default function App() {
                 <Route path="analyze" element={<AnalyzerPage />} />
                 <Route path="explorer" element={<ExplorerPage />} />
                 <Route path="models" element={<ModelsPage />} />
+              <Route path="emotions" element={<EmotionsPage />} />
+              <Route path="aspects" element={<AspectsPage />} />
+              <Route path="topics" element={<TopicsPage />} />
+              <Route path="insights" element={<InsightsPage />} />
                 <Route path="*" element={<Navigate replace to="/" />} />
               </Route>
             </Routes>

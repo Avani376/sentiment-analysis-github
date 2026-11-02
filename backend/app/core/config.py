@@ -63,6 +63,8 @@ class Settings(BaseSettings):
     #: default (audit constraint: disk-constrained machine).
     enable_distilbert: bool = True
     enable_cardiffnlp: bool = False
+    #: Emotion classifier (~330 MB download on first use, CPU-friendly).
+    enable_emotion: bool = True
 
     # --- Artifact locations -------------------------------------------------
     legacy_model_path: Path = PROJECT_ROOT / "models" / "tfidf_logreg.pkl"

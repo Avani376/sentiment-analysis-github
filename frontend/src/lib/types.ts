@@ -177,3 +177,90 @@ export interface DatasetAnalytics {
   agreement: Record<string, number>;
   examples: Record<string, ReviewExample[]>;
 }
+
+export interface AspectMention {
+  category: string;
+  term: string;
+  polarity: string;
+  confidence: number;
+  evidence: string;
+  review_id: number;
+}
+
+export interface AspectAggregate {
+  category: string;
+  mentions: number;
+  positive: number;
+  negative: number;
+  neutral: number;
+  avg_confidence: number;
+  positive_evidence: AspectMention[];
+  negative_evidence: AspectMention[];
+}
+
+export interface AspectsOut {
+  dataset_id: string;
+  method: string;
+  clauses_analyzed: number;
+  aspects: AspectAggregate[];
+}
+
+export interface TopicOut {
+  topic_id: number;
+  size: number;
+  keywords: string[];
+  sentiment: string | null;
+  positive: number;
+  negative: number;
+  representative: { review_id: number; text: string }[];
+}
+
+export interface TopicsOut {
+  dataset_id: string;
+  method: string;
+  adequate: boolean;
+  message: string | null;
+  topics: TopicOut[];
+}
+
+export interface InsightEvidence {
+  statistic: string;
+  review_ids: number[];
+}
+
+export interface InsightOut {
+  id: string;
+  kind: string;
+  title: string;
+  statement: string;
+  evidence: InsightEvidence;
+  strength: "strong" | "moderate" | "weak";
+}
+
+export interface InsightsOut {
+  dataset_id: string;
+  generated_from: string[];
+  insights: InsightOut[];
+}
+
+export interface EmotionDistributionEntry {
+  emotion: string;
+  presentation: string;
+  count: number;
+  share: number;
+}
+
+export interface EmotionExample extends ReviewOut {
+  dominant_emotion: string;
+  confidence: number;
+}
+
+export interface DatasetEmotionAnalytics {
+  dataset_id: string;
+  total_reviews: number;
+  analyzed_reviews: number;
+  has_results: boolean;
+  model_key: string;
+  distribution: EmotionDistributionEntry[];
+  examples: Record<string, EmotionExample[]>;
+}

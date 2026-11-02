@@ -5,11 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
   Boxes,
+  Brain,
   Gauge,
+  Lightbulb,
   ListFilter,
   LogOut,
   MessageSquareText,
   Microscope,
+  PieChart,
+  Puzzle,
   SentinexLogo,
 } from "./icons";
 import { useAuth } from "./Auth";
@@ -20,6 +24,10 @@ const NAV = [
   { to: "/", label: "Overview", icon: Gauge, end: true },
   { to: "/analyze", label: "Analyze Review", icon: MessageSquareText, end: false },
   { to: "/explorer", label: "Review Explorer", icon: ListFilter, end: false },
+  { to: "/emotions", label: "Emotion Intelligence", icon: Brain, end: false },
+  { to: "/aspects", label: "Aspect Intelligence", icon: Puzzle, end: false },
+  { to: "/topics", label: "Topic Explorer", icon: PieChart, end: false },
+  { to: "/insights", label: "Business Insights", icon: Lightbulb, end: false },
   { to: "/models", label: "Model Laboratory", icon: Microscope, end: false },
 ];
 

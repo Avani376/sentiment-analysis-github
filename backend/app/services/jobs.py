@@ -63,7 +63,12 @@ def _run_dataset_job(job_id: str) -> None:
             review_ids = list(
                 db.scalars(select(Review.id).where(Review.dataset_id == job.dataset_id)).all()
             )
-            job.progress_total = len(review_ids) * max(1, len(models))
+            # emotion pass (separate task) included when enabled
+            from app.services.emotion import get_emotion_analyzer
+
+            emotion_analyzer = get_emotion_analyzer()
+            include_emotion = emotion_analyzer.is_enabled()
+            job.progress_total = len(review_ids) * (max(1, len(models)) + (1 if include_emotion else 0))
             job.progress_current = 0
             db.commit()
 
@@ -100,6 +105,19 @@ def _run_dataset_job(job_id: str) -> None:
                     done += len(batch_ids)
                     job.progress_current = done
                     db.commit()
+
+            if include_emotion:
+                from app.api.v1.emotions import persist_dataset_emotions
+
+                processed = persist_dataset_emotions(
+                    db,
+                    str(job.dataset_id),
+                    emotion_analyzer.model_key,
+                    emotion_analyzer.metadata_version,
+                )
+                done += processed
+                job.progress_current = done
+                db.commit()
 
             job.status = "succeeded"
             logger.info("Job %s succeeded (%d prediction passes)", job_id, done)

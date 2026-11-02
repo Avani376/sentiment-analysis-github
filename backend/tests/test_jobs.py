@@ -45,8 +45,8 @@ def test_full_bulk_analysis_pipeline(client, csv_file):
 
     finished = _wait_for_job(client, job["id"])
     assert finished["status"] == "succeeded", finished.get("error_message")
-    # 3 reviews x 2 available TF-IDF models = 6 prediction passes
-    assert finished["progress_current"] == finished["progress_total"] == 6
+    # 3 reviews x (2 sentiment models + 1 emotion model) = 9 passes
+    assert finished["progress_current"] == finished["progress_total"] == 9
 
     # analytics reflect persisted predictions for every model x review
     analytics = client.get(f"/api/v1/datasets/{dataset_id}/analytics").json()
@@ -82,3 +82,40 @@ def test_upload_with_zero_valid_rows_is_rejected(client, csv_file):
 
 def test_job_poll_unknown_id(client):
     assert client.get("/api/v1/jobs/does-not-exist").status_code == 404
+
+
+def test_emotions_aspects_topics_insights_pipeline(client, csv_file):
+    dataset_id = _upload(client, csv_file)
+
+    # emotions: populated by the bulk job (emotion model cached locally)
+    job = client.post(f"/api/v1/datasets/{dataset_id}/analyze").json()
+    finished = _wait_for_job(client, job["id"])
+    assert finished["status"] == "succeeded", finished.get("error_message")
+
+    emotions = client.get(f"/api/v1/emotions/datasets/{dataset_id}").json()
+    assert emotions["has_results"] is True
+    assert emotions["analyzed_reviews"] == 3
+    assert emotions["distribution"], "emotion distribution expected"
+    for entry in emotions["distribution"]:
+        assert 0 <= entry["share"] <= 1
+        assert entry["presentation"]
+
+    # aspects: rule-based baseline with evidence spans
+    aspects = client.get(f"/api/v1/datasets/{dataset_id}/aspects").json()
+    assert aspects["clauses_analyzed"] > 0
+    for aspect in aspects["aspects"]:
+        assert aspect["mentions"] >= 1
+        assert aspect["positive_evidence"] or aspect["negative_evidence"]
+
+    # topics: 3 reviews is below the graceful threshold
+    topics = client.get(f"/api/v1/datasets/{dataset_id}/topics").json()
+    assert topics["adequate"] is False
+    assert topics["message"]
+
+    # insights: deterministic, evidence-cited
+    insights = client.get(f"/api/v1/datasets/{dataset_id}/insights").json()
+    kinds = {i["kind"] for i in insights["insights"]}
+    assert "executive_summary" in kinds
+    for insight in insights["insights"]:
+        assert insight["strength"] in ("strong", "moderate", "weak")
+        assert insight["evidence"]["statistic"]
