@@ -188,7 +188,8 @@ def draw_review_card(v: Image.Image, card: dict, appear: float, x: float, y: flo
     d = ImageDraw.Draw(img)
     d.rounded_rectangle([20, 20, 20 + w, 20 + h], 12, fill=(13, 20, 37, 235), outline=(28, 42, 71, 255), width=1)
     for line in range(3):
-        d.rounded_rectangle([34, 34 + line * 20, 20 + w - (70 if line == 1 else 34), 42 + line * 20], 3, fill=(255, 255, 255, 46))
+        x1 = max(36, 20 + w - (70 if line == 1 else 34))
+        d.rounded_rectangle([34, 34 + line * 20, x1, 42 + line * 20], 3, fill=(255, 255, 255, 46))
     label, color = card["chip"]
     d.rounded_rectangle([34, 34 + 3 * 20, 34 + 92, 30 + 3 * 20 + 22], 8, fill=color + (44,))
     d.text((80, 34 + 3 * 20 + 11), label, font=font("seguisb.ttf", 11), fill=color, anchor="mm")
