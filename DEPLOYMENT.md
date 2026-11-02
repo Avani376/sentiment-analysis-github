@@ -2,15 +2,43 @@
 
 The repository ships everything needed to deploy the **real application**: a
 multi-stage `Dockerfile` (builds the React SPA, then serves it from FastAPI),
-a `docker-compose.yml` for local full-stack runs, and a `render.yaml`
-blueprint for one-service cloud deployment.
+a `docker-compose.yml` for local full-stack runs, a `render.yaml`
+blueprint for one-service cloud deployment, and **Vercel serverless config**
+(`vercel.json` + `api/index.py`) for a FastAPI-function + static-SPA split.
 
-> **Status (2026-10-30):** deployment is prepared and locally validated, but a
-> public URL does not exist yet because cloud accounts require the repository
-> owner's action. Every remaining step is listed below — nothing else in the
-> process needs to change.
+> **Status (2026-11-02):** Vercel and Render configurations are prepared and
+> locally validated. A public URL requires the repository owner's account
+> (no cloud credentials exist on the dev machine). A temporary Cloudflare
+> quick-tunnel link has been used for live verification.
 
 ---
+
+## 0. Vercel (serverless — fastest path to a permanent URL)
+
+**Requires: a Vercel account + token.** Create a token at
+[vercel.com/account/tokens](https://vercel.com/account/tokens) (30 seconds),
+then from the repository root:
+
+```bash
+npx vercel deploy --prod --yes --token <YOUR_TOKEN>
+```
+
+What the shipped config does:
+
+| Piece | Detail |
+|---|---|
+| `api/index.py` | FastAPI as a serverless ASGI function (`/api/*`, `/health`, `/docs`, `/openapi.json`) |
+| `frontend` | `@vercel/static-build` → React SPA served from the edge, `index.html` catch-all for client-side routes |
+| Database | SQLite on `/tmp` — persists while the instance is warm; **for real persistence create Vercel Postgres** (Storage tab) and set `SENTINEX_DATABASE_URL` |
+| Models | The two TF-IDF models run serverless; **DistilBERT is off** — Vercel's 250 MB function limit cannot fit torch + weights |
+| Uploads | Capped at 4 MB (Vercel body limit); CSV files are consumed within the request, so `/tmp` is sufficient |
+
+Verified locally via `scripts/simulate_vercel.py` (the exact entrypoint
+import + health/analyze/models/upload round-trip).
+
+**Known risk:** the pandas + scikit-learn + scipy function bundle is close to
+Vercel's 250 MB unpacked limit. If the deploy fails on function size, use the
+Render path below — the same application runs there without limits.
 
 ## 1. Local full-stack run (Docker)
 
