@@ -65,6 +65,22 @@ class EmotionAnalyzer:
     def is_enabled(self) -> bool:
         return self._settings.enable_emotion
 
+    def is_runnable(self) -> bool:
+        """Enabled AND heavy dependencies (torch/transformers) importable.
+
+        Serverless / free-tier deployments intentionally ship without torch —
+        jobs there skip the emotion pass instead of crashing mid-run.
+        """
+        if not self.is_enabled():
+            return False
+        try:
+            import torch  # noqa: F401
+            import transformers  # noqa: F401
+
+            return True
+        except ImportError:
+            return False
+
     def is_cached(self) -> bool | None:
         try:
             from huggingface_hub import try_to_load_from_cache

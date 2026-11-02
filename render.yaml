@@ -35,6 +35,8 @@ services:
         value: "false"
       - key: SENTINEX_ENABLE_CARDIFFNLP
         value: "false"
+      - key: SENTINEX_ENABLE_EMOTION
+        value: "false"
       # Render free-tier disks are EPHEMERAL: uploaded datasets reset on
       # redeploy. Attach a paid disk + a managed Postgres for persistence,
       # then set SENTINEX_DATABASE_URL accordingly.

@@ -67,7 +67,11 @@ def _run_dataset_job(job_id: str) -> None:
             from app.services.emotion import get_emotion_analyzer
 
             emotion_analyzer = get_emotion_analyzer()
-            include_emotion = emotion_analyzer.is_enabled()
+            include_emotion = emotion_analyzer.is_runnable()
+            if not include_emotion:
+                logger.warning(
+                    "Job %s: emotion pass skipped (torch/transformers unavailable "
+                    "or disabled) — sentiment predictions are unaffected", job_id)
             job.progress_total = len(review_ids) * (max(1, len(models)) + (1 if include_emotion else 0))
             job.progress_current = 0
             db.commit()
