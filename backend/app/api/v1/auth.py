@@ -24,7 +24,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 SESSION_COOKIE = "sentinex_session"
 SESSION_TTL = timedelta(days=7)
-_USERNAME_RE = re.compile(r"^[a-zA-Z0-9_]{3,32}$")
+_USERNAME_RE = re.compile(r"^[a-zA-Z0-9._@+-]{3,64}$")
 
 
 def _utcnow_naive() -> datetime:
@@ -61,10 +61,24 @@ def _issue_session(db, user: User, request: Request, response: Response) -> User
 @router.post("/register", response_model=UserOut, status_code=201)
 def register(payload: RegisterRequest, db: DbSession) -> UserOut:
     username = payload.username.strip().lower()
+    # Emails are accepted as usernames (abc@gmail.com is fine). Everything
+    # else that isn't a sane identifier is rejected with a HELPFUL message.
     if not _USERNAME_RE.match(username):
+        if "@" in username:
+            raise UnprocessableError(
+                "invalid_username",
+                "That email address is missing something (check the format, e.g. name@gmail.com), "
+                "or use a plain username: 3-64 characters — letters, numbers, or . _ @ + -.",
+            )
         raise UnprocessableError(
             "invalid_username",
-            "Username must be 3-32 characters: letters, digits, underscores.",
+            "Username must be 3-64 characters and may contain letters, numbers, and . _ @ + - "
+            "(you can use your email address).",
+        )
+    if len(payload.password) < 8:
+        raise UnprocessableError(
+            "invalid_password",
+            "Password must be at least 8 characters long.",
         )
     if db.scalar(select(User.id).where(User.username == username)):
         raise ConflictError("username_taken", f"Username {username!r} is already registered.")

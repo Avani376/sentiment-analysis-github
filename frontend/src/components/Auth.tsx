@@ -42,6 +42,16 @@ function LoginScreen({ onAuthed }: { onAuthed: () => void }) {
 
   const submit = async () => {
     setError(null);
+    if (mode === "register") {
+      if (username.trim().length < 3) {
+        setError("Username (or email) must be at least 3 characters.");
+        return;
+      }
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters long.");
+        return;
+      }
+    }
     setBusy(true);
     try {
       if (mode === "register") {
@@ -104,7 +114,7 @@ function LoginScreen({ onAuthed }: { onAuthed: () => void }) {
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              placeholder="Username or email"
               autoComplete="username"
               className="w-full rounded-xl border border-[var(--color-edge)] bg-[var(--color-base)]/60 px-4 py-2.5 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:border-indigo-500/50"
             />
@@ -124,6 +134,12 @@ function LoginScreen({ onAuthed }: { onAuthed: () => void }) {
               autoComplete={mode === "register" ? "new-password" : "current-password"}
               className="w-full rounded-xl border border-[var(--color-edge)] bg-[var(--color-base)]/60 px-4 py-2.5 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:border-indigo-500/50"
             />
+            {mode === "register" && (
+              <p className="text-[11px] text-slate-600">
+                You can use your email address as the username — 3-64 characters
+                (letters, numbers, and . _ @ + -).
+              </p>
+            )}
             {error && (
               <p className="flex items-center gap-1.5 rounded-lg bg-rose-500/10 px-3 py-2 text-xs text-rose-300">
                 <CircleAlert className="h-3.5 w-3.5 shrink-0" /> {error}

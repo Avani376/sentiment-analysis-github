@@ -84,3 +84,33 @@ def test_mutations_require_login(fresh_client, csv_file):
 def test_reads_stay_public(fresh_client):
     assert fresh_client.get("/api/v1/models").status_code == 200
     assert fresh_client.get("/health").status_code == 200
+
+
+def test_email_address_works_as_username(client):
+    """Regression: abc@gmail.com was rejected with a generic error — emails
+    are valid usernames and short passwords get a HELPFUL message now."""
+    username = f"{uuid.uuid4().hex[:8]}@gmail.com"
+    response = client.post(
+        "/api/v1/auth/register",
+        json={"username": username, "password": "secret-password-1", "display_name": "abc"},
+    )
+    assert response.status_code == 201
+    assert response.json()["username"] == username
+    # login with the same email works
+    assert (
+        client.post(
+            "/api/v1/auth/login", json={"username": username, "password": "secret-password-1"}
+        ).status_code
+        == 200
+    )
+
+
+def test_short_password_returns_friendly_message(client):
+    response = client.post(
+        "/api/v1/auth/register",
+        json={"username": _unique_username(), "password": "abc"},
+    )
+    assert response.status_code == 422
+    body = response.json()["error"]
+    assert body["code"] == "invalid_password"
+    assert "at least 8 characters" in body["message"]

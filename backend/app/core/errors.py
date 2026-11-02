@@ -90,12 +90,16 @@ def register_exception_handlers(app) -> None:  # noqa: ANN001 - FastAPI app type
 
     @app.exception_handler(RequestValidationError)
     async def handle_validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
+        first = exc.errors()[0] if exc.errors() else {}
+        field = ".".join(str(part) for part in first.get("loc", []) if part != "body")
+        message = str(first.get("msg", "Request validation failed."))
+        human = f"{field}: {message}" if field else message
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content=ErrorEnvelope(
                 error=ErrorBody(
                     code="validation_error",
-                    message="Request validation failed.",
+                    message=f"Request validation failed — {human}",
                     details={"errors": exc.errors()},
                 )
             ).model_dump(),
