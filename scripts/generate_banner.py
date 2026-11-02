@@ -108,7 +108,7 @@ def draw_scene(frame_img: Image.Image, t: float) -> None:
     for i in range(14):
         x = int(((t + i / 14) % 1) * (W + 80)) - 40
         y = 64 + int(10 * math.sin(2 * math.pi * (t + i / 14) * 2 + i))
-        fade = 0.35 + 0.4 * math.sin(math.pi * (((t + i / 14) % 1)))
+        fade = 0.35 + 0.4 * math.sin(math.pi * ((t + i / 14) % 1))
         draw.ellipse([x - 2, y - 2, x + 2, y + 2], fill=CYAN + (int(255 * fade),))
 
     # --- neural network -----------------------------------------------------

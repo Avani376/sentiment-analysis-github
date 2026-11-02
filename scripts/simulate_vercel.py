@@ -1,6 +1,5 @@
 """Local simulation of the Vercel serverless environment (Windows-adjusted)."""
 import os
-import sqlite3
 import sys
 from pathlib import Path
 
@@ -12,9 +11,8 @@ os.environ["SENTINEX_AUTO_CREATE_TABLES"] = "true"
 os.environ["SENTINEX_MAX_UPLOAD_MB"] = "4"
 
 sys.path.insert(0, "api")
-from fastapi.testclient import TestClient  # noqa: E402
-
-from index import app  # noqa: E402  — the exact entrypoint Vercel imports
+from fastapi.testclient import TestClient
+from index import app
 
 with TestClient(app) as client:  # context manager triggers lifespan (cold start)
     print("health  :", client.get("/health").json())

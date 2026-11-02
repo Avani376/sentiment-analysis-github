@@ -21,7 +21,9 @@ from pathlib import Path
 BACKEND_DIR = Path(__file__).resolve().parents[1] / "backend"
 sys.path.insert(0, str(BACKEND_DIR))
 
-from app.main import app  # noqa: E402  (FastAPI ASGI application)
+# The @vercel/python runtime looks for this module-level ``app`` symbol — the
+# import is intentionally "unused" in Python terms. Never remove it.
+from app.main import app  # noqa: E402, F401  (FastAPI ASGI application)
 
 from app.core.config import get_settings  # noqa: E402
 
@@ -30,7 +32,7 @@ _settings.ensure_runtime_dirs()
 
 if os.environ.get("SENTINEX_AUTO_CREATE_TABLES", "false").lower() == "true":
     # Idempotent cold-start schema bootstrap for ephemeral serverless DBs.
-    from app.db.base import Base  # noqa: E402
-    from app.db.session import engine  # noqa: E402
+    from app.db.base import Base
+    from app.db.session import engine
 
     Base.metadata.create_all(bind=engine)

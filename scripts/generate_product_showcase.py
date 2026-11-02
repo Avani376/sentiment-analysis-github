@@ -35,9 +35,9 @@ from PIL import Image, ImageDraw, ImageFilter
 
 # Reuse the banner's verified art primitives (sprites, graph, city, logo).
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from generate_cinematic_banner import (  # noqa: E402
+import imageio_ffmpeg
+from generate_cinematic_banner import (
     AMBER,
-    BG_BOT,
     BG_TOP,
     BRAIN_EDGES,
     BRAIN_NODES,
@@ -47,26 +47,21 @@ from generate_cinematic_banner import (  # noqa: E402
     EDGE,
     GLOWS,
     GREEN,
+    INDIGO_L,
     INK,
     INK_DIM,
     INK_FAINT,
-    INDIGO,
-    INDIGO_L,
     LOGO,
     PINK,
-    PANEL,
     ROSE,
     SKY,
     VIOLET,
     build_emoji,
     font,
-    glow_sprite,
     gradient_text,
     paste_glow,
     polyline_point,
 )
-
-import imageio_ffmpeg  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ASSETS = REPO_ROOT / "assets"
