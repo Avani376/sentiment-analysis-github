@@ -71,9 +71,17 @@ class Settings(BaseSettings):
     evaluations_dir: Path = ARTIFACTS_DIR / "evaluations"
 
     def ensure_runtime_dirs(self) -> None:
-        """Create runtime directories that must exist before serving traffic."""
-        self.upload_dir.mkdir(parents=True, exist_ok=True)
-        RUNTIME_DIR.mkdir(parents=True, exist_ok=True)
+        """Create runtime directories that must exist before serving traffic.
+
+        Defensive on purpose: on read-only serverless filesystems the project
+        directories cannot be created — /tmp overrides via environment
+        variables are the supported path there.
+        """
+        for directory in (RUNTIME_DIR, self.upload_dir):
+            try:
+                directory.mkdir(parents=True, exist_ok=True)
+            except OSError:
+                pass  # read-only filesystem — /tmp overrides apply instead
 
 
 @lru_cache

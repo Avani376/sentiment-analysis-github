@@ -1,0 +1,16 @@
+# Keep the serverless bundle and upload small — the function limit is 250 MB.
+.git
+.github
+.venv
+venv
+assets
+node_modules
+frontend/node_modules
+frontend/dist
+backend/.runtime
+backend/tests
+backend/alembic
+docs
+*.md
+data/*.png
+scripts

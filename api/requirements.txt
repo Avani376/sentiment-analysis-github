@@ -1,0 +1,13 @@
+# Vercel serverless function dependencies (core backend only).
+# Torch/transformers are excluded: Vercel's 250 MB function limit cannot fit
+# them, so the DistilBERT adapter stays disabled via SENTINEX_ENABLE_DISTILBERT.
+fastapi==0.162.0
+pydantic==2.14.2
+pydantic-settings==2.16.2
+sqlalchemy==2.1.6
+python-multipart==0.0.32
+pyyaml==6.0.3
+pandas==2.2.3
+numpy==2.4.6
+scikit-learn==1.6.1
+joblib==1.4.2

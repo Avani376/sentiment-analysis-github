@@ -1,0 +1,32 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.py" },
+    { "src": "/health", "dest": "/api/index.py" },
+    { "src": "/docs", "dest": "/api/index.py" },
+    { "src": "/docs/(.*)", "dest": "/api/index.py" },
+    { "src": "/openapi.json", "dest": "/api/index.py" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "env": {
+    "SENTINEX_DATABASE_URL": "sqlite:////tmp/sentinex.db",
+    "SENTINEX_UPLOAD_DIR": "/tmp/sentinex-uploads",
+    "SENTINEX_MAX_UPLOAD_MB": "4",
+    "SENTINEX_ENABLE_DISTILBERT": "false",
+    "SENTINEX_ENABLE_CARDIFFNLP": "false",
+    "SENTINEX_AUTO_CREATE_TABLES": "true",
+    "SENTINEX_LOG_LEVEL": "WARNING"
+  }
+}
