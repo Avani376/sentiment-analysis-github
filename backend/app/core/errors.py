@@ -41,6 +41,11 @@ class NotFoundError(AppError):
         super().__init__(code, message, status.HTTP_404_NOT_FOUND, details)
 
 
+class UnauthorizedError(AppError):
+    def __init__(self, code: str, message: str, details: dict[str, Any] | None = None) -> None:
+        super().__init__(code, message, status.HTTP_401_UNAUTHORIZED, details)
+
+
 class ConflictError(AppError):
     def __init__(self, code: str, message: str, details: dict[str, Any] | None = None) -> None:
         super().__init__(code, message, status.HTTP_409_CONFLICT, details)

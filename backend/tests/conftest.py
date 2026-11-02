@@ -36,6 +36,8 @@ def _create_schema():
 def _clean_tables(_create_schema):
     yield
     with SessionLocal() as session:
+        # Users are deliberately kept: the session-scoped client holds a login
+        # cookie for the shared test user; auth tests use unique usernames.
         for model in (Prediction, Review, Job, Dataset):
             session.execute(delete(model))
         session.commit()
@@ -43,6 +45,26 @@ def _clean_tables(_create_schema):
 
 @pytest.fixture(scope="session")
 def client() -> TestClient:
+    """TestClient that is REGISTERED AND LOGGED IN for the whole session.
+
+    Mutating endpoints require auth; most tests exercise them through this
+    client. Use ``fresh_client`` for unauthenticated behaviour tests.
+    """
+    test_client = TestClient(fastapi_app)
+    test_client.post(
+        "/api/v1/auth/register",
+        json={"username": "testuser", "password": "test-password-123"},
+    )
+    test_client.post(
+        "/api/v1/auth/login",
+        json={"username": "testuser", "password": "test-password-123"},
+    )
+    return test_client
+
+
+@pytest.fixture(scope="session")
+def fresh_client() -> TestClient:
+    """Unauthenticated client for auth-negative tests."""
     return TestClient(fastapi_app)
 
 

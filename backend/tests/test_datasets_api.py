@@ -35,8 +35,6 @@ def test_upload_with_explicit_mapping(client, csv_file):
     row_6 = next(r for r in body["preview"] if r["raw_label"] == "meh")
     assert row_6["label"] is None
 
-    return body["id"]
-
 
 def test_upload_auto_detects_columns(client, csv_file):
     files = csv_file(SAMPLE_CSV)

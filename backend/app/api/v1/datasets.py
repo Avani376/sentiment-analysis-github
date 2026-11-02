@@ -2,20 +2,24 @@
 
 from __future__ import annotations
 
+import csv
+import io
 from typing import Annotated
 
-from fastapi import APIRouter, File, Form, Query, UploadFile
+from fastapi import APIRouter, File, Form, Query, Response, UploadFile
 from sqlalchemy import select
 
-from app.api.deps import DbSession, SettingsDep
+from app.api.deps import AuthUser, DbSession, SettingsDep
 from app.core.errors import UnprocessableError
-from app.models.entities import Dataset
+from app.models.entities import Dataset, Prediction, Review
+from app.schemas.analytics import DatasetAnalytics
 from app.schemas.datasets import (
     DatasetCreatedResponse,
     DatasetIngestStats,
     DatasetOut,
     ReviewPage,
 )
+from app.services.analytics import dataset_analytics
 from app.services.datasets.ingest import ColumnMapping
 from app.services.datasets.service import (
     delete_dataset,
@@ -56,6 +60,7 @@ def _dataset_out(dataset: Dataset) -> DatasetOut:
 def upload_dataset(
     db: DbSession,
     settings: SettingsDep,
+    user: AuthUser,
     file: Annotated[UploadFile, File(description="CSV file with review rows.")],
     name: Annotated[str | None, Form(max_length=255)] = None,
     text_column: Annotated[str | None, Form()] = None,
@@ -141,6 +146,58 @@ def get_dataset_reviews(
 
 
 @router.delete("/{dataset_id}", status_code=204)
-def remove_dataset(dataset_id: str, db: DbSession) -> None:
+def remove_dataset(dataset_id: str, db: DbSession, user: AuthUser) -> None:
     dataset = get_dataset_or_404(db, dataset_id)
     delete_dataset(db, dataset)
+
+
+@router.get("/{dataset_id}/analytics", response_model=DatasetAnalytics)
+def get_dataset_analytics(dataset_id: str, db: DbSession) -> DatasetAnalytics:
+    """Aggregated model results for this dataset (empty state until a job ran)."""
+    dataset = get_dataset_or_404(db, dataset_id)
+    return dataset_analytics(db, dataset)
+
+
+@router.get("/{dataset_id}/export")
+def export_dataset(dataset_id: str, db: DbSession) -> Response:
+    """Download reviews + persisted predictions as CSV."""
+    dataset = get_dataset_or_404(db, dataset_id)
+    reviews = db.scalars(
+        select(Review).where(Review.dataset_id == dataset.id).order_by(Review.id)
+    ).all()
+    predictions = db.execute(
+        select(Prediction).join(Review, Prediction.review_id == Review.id).where(
+            Review.dataset_id == dataset.id
+        )
+    ).scalars().all()
+
+    by_review: dict[int, list[Prediction]] = {}
+    for pred in predictions:
+        by_review.setdefault(pred.review_id, []).append(pred)
+    model_keys = sorted({p.model_key for p in predictions})
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    header = ["review_id", "external_id", "text", "ground_truth_label", "timestamp"]
+    header += [f"{key}_label" for key in model_keys]
+    header += [f"{key}_confidence" for key in model_keys]
+    writer.writerow(header)
+    for review in reviews:
+        row = [
+            review.id,
+            review.external_id or "",
+            review.text,
+            review.label or "",
+            review.review_timestamp.isoformat() if review.review_timestamp else "",
+        ]
+        preds = {p.model_key: p for p in by_review.get(review.id, [])}
+        row += [preds[key].label if key in preds else "" for key in model_keys]
+        row += [preds[key].confidence if key in preds else "" for key in model_keys]
+        writer.writerow(row)
+
+    filename = "".join(ch if ch.isalnum() else "-" for ch in dataset.name).strip("-") or "dataset"
+    return Response(
+        content=buffer.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}-export.csv"'},
+    )
